@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from typing import List, Optional
 from app.models.permission import Permission, RoleEnum
 
-class PermissionRepository:
+class CollaborationRepository:
     def __init__(self, db: Session):
         self.db = db
 
@@ -29,14 +29,14 @@ class PermissionRepository:
             share.role = role
             self.db.commit()
             self.db.refresh(share)
-
         return share
     
-    def delete(self, event_id: int, user_id: int) -> bool:
+    def delete_permission(self, event_id: int, user_id: int) -> bool:
         share = self.get_by_event_and_user(event_id, user_id)
         if share:
-            share.db.delete(share)
+            self.db.delete(share)
             self.db.commit()
             return True
-        
         return False
+    
+

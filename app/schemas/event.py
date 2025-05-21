@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
 from datetime import datetime
 
 class EventBase(BaseModel):
@@ -9,19 +9,19 @@ class EventBase(BaseModel):
     end_time: datetime
     location: Optional[str] = None
     is_recurring: Optional[bool] = False
-    reccurrence_pattern: Optional[str] =None
+    recurrence_pattern: Optional[str] = None  # fixed typo
 
 class EventCreate(EventBase):
     pass
 
 class EventUpdate(BaseModel):
-    title: Optional[str]
-    description: Optional[str]
-    start_time: Optional[datetime]
-    end_time: Optional[datetime]
-    location: Optional[str]
-    is_recurring: Optional[bool]
-    reccurrence_pattern: Optional[str]
+    title: Optional[str] = None
+    description: Optional[str] = None
+    start_time: Optional[datetime] = None
+    end_time: Optional[datetime] = None
+    location: Optional[str] = None
+    is_recurring: Optional[bool] = None
+    recurrence_pattern: Optional[str] = None
 
 class EventOut(EventBase):
     id: int
@@ -29,5 +29,10 @@ class EventOut(EventBase):
     created_at: datetime
     updated_at: datetime
 
+
+class EventCreateBatch(BaseModel):
+    events: List[EventBase]
+    
     class Config:
         from_attributes = True
+        extra = "forbid"

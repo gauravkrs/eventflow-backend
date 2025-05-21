@@ -16,10 +16,10 @@ def hash_password(password: str) -> str:
 def verify_password(plain_password: str, hash_password: str) -> bool:
     return pwd_context.verify(plain_password, hash_password)
 
-def create_access_token(data:dict, expires_delta: timedelta | None= None):
+def create_access_token(data:dict, expires_delta: timedelta | None= None, scope: str = "access_token"):
     to_encode = data.copy()
     expire = datetime.utcnow() + (expires_delta or timedelta(minutes=REFRESH_TOKEN_EXPIRE_MINUTES))
-    to_encode.update({"exp": expire})
+    to_encode.update({"exp": expire, "scope": scope})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
 def create_refresh_token(data: dict, expires_delta: timedelta | None = None):
