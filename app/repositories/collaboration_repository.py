@@ -13,30 +13,26 @@ class CollaborationRepository:
             .first()
         )
 
-    def create_role(self, event_id: int, user_id: int, role: RoleEnum) ->  Permission:
-        permission = Permission(event_id= event_id, user_id = user_id, role = role)
+    def create_role(self, event_id: int, user_id: int, role: RoleEnum) -> Permission:
+        permission = Permission(event_id=event_id, user_id=user_id, role=role)
         self.db.add(permission)
-        self.db.commit()
-        self.db.refresh(permission)
+        self.db.flush() 
         return permission
     
     def list_by_event(self, event_id: int) -> List[Permission]:
-        return self.db.query(Permission).filter(Permission.event_id == event_id)
+        return self.db.query(Permission).filter(Permission.event_id == event_id).all()
     
     def update_role(self, event_id: int, user_id: int, role: RoleEnum) -> Optional[Permission]:
         share = self.get_by_event_and_user(event_id, user_id)
         if share:
             share.role = role
-            self.db.commit()
-            self.db.refresh(share)
+            self.db.flush()
         return share
     
     def delete_permission(self, event_id: int, user_id: int) -> bool:
         share = self.get_by_event_and_user(event_id, user_id)
         if share:
             self.db.delete(share)
-            self.db.commit()
+            self.db.flush()
             return True
         return False
-    
-
