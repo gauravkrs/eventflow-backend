@@ -35,8 +35,13 @@ async def list_events(db: Session = Depends(get_db), user= Depends(get_current_u
     
 @router.get("/{event_id}", response_model=EventOut)
 async def get_event(event_id: int, db: Session = Depends(get_db), user: int = Depends(get_current_user)):
-    service =  EventService(db)
-    return service.get_event(event_id, user.id)
+    try:
+        service = EventService(db)
+        return service.get_event(event_id, user.id)
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to fetch event")
 
 @router.put("/{event_id}", response_model=EventOut)
 async def update_event(event_id: int, payload: EventUpdate, db: Session = Depends(get_db), user: int = Depends(get_current_user)):
