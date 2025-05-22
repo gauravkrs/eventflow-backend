@@ -15,13 +15,12 @@ async def create_event(
     db: Session = Depends(get_db),
     user=Depends(get_current_user),
 ):
-    print(payload)
     try:
         service = EventService(db)
         event = service.create_event(user.id, payload)
-        return event
+        event_with_versions = service.get_event_with_versions(event.id)
+        return event_with_versions
     except Exception as e:
-        # Optional: log error e here
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to create event"
@@ -35,15 +34,15 @@ async def list_events(db: Session = Depends(get_db), user= Depends(get_current_u
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to list events")
     
 @router.get("/{event_id}", response_model=EventOut)
-async def get_event(event_id: int, db: Session = Depends(get_db)):
+async def get_event(event_id: int, db: Session = Depends(get_db), user: int = Depends(get_current_user)):
     service =  EventService(db)
-    return service.get_event(event_id)
+    return service.get_event(event_id, user.id)
 
 @router.put("/{event_id}", response_model=EventOut)
-async def update_event(event_id: int, payload: EventUpdate, db: Session = Depends(get_db)):
+async def update_event(event_id: int, payload: EventUpdate, db: Session = Depends(get_db), user: int = Depends(get_current_user)):
     try:
         service = EventService(db)
-        return service.update_event(event_id, payload)
+        return service.update_event(event_id, payload, user.id)
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to update events") 
 
